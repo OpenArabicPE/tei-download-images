@@ -47,9 +47,11 @@
            </xsl:call-template>
        </xsl:result-document>
         <!-- step 2: replicate the input TEI and add a new tei:graphic child to each tei:surface with a link to the newly-downloaded local file -->
-        <xsl:copy>
-            <xsl:apply-templates/>
-        </xsl:copy>
+        <xsl:result-document href="{$p_base-path}{$vg_id-file}.TEIP5.xml">
+            <xsl:copy>
+                <xsl:apply-templates/>
+            </xsl:copy>
+        </xsl:result-document>
     </xsl:template>
     
     <!-- replicate all -->
