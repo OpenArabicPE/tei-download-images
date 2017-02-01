@@ -12,7 +12,7 @@
     <!-- This stylesheet downloads image files referenced in the tei:facsimile element to the local hard drive and adds links to these downloaded images to tei:facsimile -->
     
     <!-- provide the path to a local folder to which all images should be saved -->
-    <xsl:param name="p_base-path" select="'/Users/BachPrivat/test_download/'"/>
+    <xsl:param name="p_base-path" select="'/Volumes/test-download/'"/>
     <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http -->
     <xsl:param name="p_position-facsimile" select="1"/>
     <xsl:param name="p_id-editor" select="'pers_TG'"/>
@@ -69,6 +69,7 @@
             <!-- add new child -->
             <xsl:element name="tei:graphic">
                 <!-- @xml:id should be added by another transformation -->
+                <xsl:attribute name="xml:id" select="concat(@xml:id,'-g_2')"/>
                 <xsl:attribute name="url" select="concat($p_base-path,tokenize(child::tei:graphic[starts-with(@url,'http')][$p_position-facsimile]/@url,'/')[last()])"/>
                 <xsl:copy-of select="child::tei:graphic[starts-with(@url,'http')][$p_position-facsimile]/@mimeType"/>
             </xsl:element>
