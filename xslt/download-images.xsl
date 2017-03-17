@@ -12,7 +12,7 @@
     <!-- This stylesheet downloads image files referenced in the tei:facsimile element to the local hard drive and adds links to these downloaded images to tei:facsimile -->
     
     <!-- provide the path to a local folder to which all images should be saved -->
-    <xsl:param name="p_base-path" select="'/Volumes/test-download/'"/>
+    <xsl:param name="p_base-path" select="'local-facs/'"/>
     <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http -->
     <xsl:param name="p_position-facsimile" select="1"/>
     <xsl:param name="p_id-editor" select="'pers_TG'"/>
@@ -20,28 +20,42 @@
     
     <xsl:template match="/">
         <!-- step 1: construct download instructions -->
-        <!-- construct a comma-separated list of urls of online facsimiles -->
+        <!-- construct urls of online facsimiles -->
         <xsl:variable name="v_image-url">
             <xsl:for-each select="descendant::tei:surface/tei:graphic[starts-with(@url,'http')][$p_position-facsimile]">
-                <xsl:value-of select="concat('&quot;',@url,'&quot;')"/>
-                <xsl:if test="following::tei:surface">
-                    <xsl:text>, </xsl:text>
-                </xsl:if>
+                <xsl:apply-templates select="."/>
             </xsl:for-each>
         </xsl:variable>
-        <!-- construct a comma-sparated list of file names (one for each image), the local path is then handed over and added by the applescript -->
+        <!-- construct a  list of file names (one for each image) -->
         <xsl:variable name="v_image-local-path">
             <xsl:for-each select="descendant::tei:surface/tei:graphic[starts-with(@url,'http')][1]">
-                <xsl:value-of select="concat('&quot;',tokenize(@url,'/')[last()],'&quot;')"/>
-                <xsl:if test="following::tei:surface">
-                    <xsl:text>, </xsl:text>
-                </xsl:if>
+                <xsl:copy>
+                    <xsl:attribute name="url">
+                        <!-- tokenize the path to the online copy and select the last bit that is most likely a file name -->
+                        <xsl:value-of select="tokenize(@url,'/')[last()]"/>
+                    </xsl:attribute>
+                </xsl:copy>
             </xsl:for-each>
         </xsl:variable>
        <xsl:result-document href="{$p_base-path}download-images_{$vg_id-file}.scpt" method="text">
            <xsl:call-template name="t_applescript">
-               <xsl:with-param name="p_image-url" select="$v_image-url"/>
-               <xsl:with-param name="p_image-local-path" select="$v_image-local-path"/>
+               <!-- construct a comma separated list of file names from $v_image-url -->
+               <xsl:with-param name="p_image-url">
+                   <xsl:for-each select="$v_image-url/descendant-or-self::tei:graphic">
+                       <xsl:value-of select="concat('&quot;',@url,'&quot;')"/>
+                       <xsl:if test="following::tei:graphic">
+                           <xsl:text>, </xsl:text>
+                       </xsl:if>
+                   </xsl:for-each>
+               </xsl:with-param>
+               <xsl:with-param name="p_image-local-path" >
+                   <xsl:for-each select="$v_image-local-path/descendant-or-self::tei:graphic">
+                       <xsl:value-of select="concat('&quot;',@url,'&quot;')"/>
+                       <xsl:if test="following::tei:graphic">
+                           <xsl:text>, </xsl:text>
+                       </xsl:if>
+                   </xsl:for-each>
+               </xsl:with-param>
                <!--            <xsl:with-param name="p_base-path" select="replace(substring-before(base-uri(),'xml/oclc'),'file:','')"/>-->
                <xsl:with-param name="p_base-path" select="$p_base-path"/>
            </xsl:call-template>
