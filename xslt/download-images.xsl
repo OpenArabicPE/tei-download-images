@@ -11,11 +11,13 @@
     <xsl:include href="download-images_shell-script.xsl"/>
     
     <!-- This stylesheet downloads image files referenced in the tei:facsimile element to the local hard drive and adds links to these downloaded images to tei:facsimile -->
+    <!-- WARNING: make sure that you have the rights to download the images before running this script -->
     
     <!-- provide the path to a local folder to which all images should be saved -->
     <xsl:param name="p_base-path" select="'../images/'"/>
-    <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http -->
+    <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http. There might be better selectors that should be implemented in future versions -->
     <xsl:param name="p_position-facsimile" select="1"/>
+    <!-- @xml:id specifying a responsible editor -->
     <xsl:param name="p_id-editor" select="'pers_TG'"/>
     <xsl:variable name="vg_id-file" select="tei:TEI/@xml:id"/>
     
