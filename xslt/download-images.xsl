@@ -15,7 +15,7 @@
     <!-- provide the path to a local folder to which all images should be saved -->
     <xsl:param name="p_base-path" select="'../images/'"/>
     <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http -->
-    <xsl:param name="p_position-facsimile" select="2"/>
+    <xsl:param name="p_position-facsimile" select="1"/>
     <xsl:param name="p_id-editor" select="'pers_TG'"/>
     <xsl:variable name="vg_id-file" select="tei:TEI/@xml:id"/>
     
