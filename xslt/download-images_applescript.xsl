@@ -10,22 +10,22 @@
     <xsl:output method="xml"  version="1.0" encoding="UTF-8" indent="yes" omit-xml-declaration="no"  name="xml"/>
     <xsl:output method="text" encoding="UTF-8" omit-xml-declaration="yes"  name="text"/>
     
-    <!-- This helper stylesheet builds applescript to download images (or any link) from the net to a folder -->
+    <!-- This helper stylesheet builds an applescript to download images (or any link) from the net to a folder -->
     <!-- The stylesheet can be called from other XSLT stylesheets which have to supply the data for the target folder, the link list, and the list of file names to be generated
-        pTargetFolder must be wrapped in single quotes to make it a literal string
-        pUrlDoc and pID are comma-separated lists of values in double quotes -->
+        $p_base-path must be a literal string
+        $p_image-url and $p_image-local-name are comma-separated lists of values in double quotes -->
     
     
     
     <xsl:template name="t_applescript">
         <xsl:param name="p_image-url"/>
-        <xsl:param name="p_image-local-path"/>
+        <xsl:param name="p_image-local-name"/>
         <xsl:param name="p_base-path"/>
         
         <![CDATA[
 set vImgUrl to {]]><xsl:value-of select="$p_image-url" disable-output-escaping="no"/><![CDATA[}]]>
         <![CDATA[
-set vImgPath to {]]><xsl:value-of select="$p_image-local-path"/><![CDATA[}]]>
+set vImgPath to {]]><xsl:value-of select="$p_image-local-name"/><![CDATA[}]]>
         <![CDATA[
 set vBasePath to {"]]><xsl:value-of select="$p_base-path"/><![CDATA["}]]>
         <![CDATA[
