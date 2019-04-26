@@ -13,3 +13,5 @@ This repository contains a set of XSLT stylesheets that provide the means to dow
 5. Generate a copy of the original TEI file with additional links to the downloaded images.
 
 In order to actually download the facsimiles, either run the shell script or the applescript.
+
+**NOTE**: the XSLT doesn't yet deal with IIIF hosted facsimiles.

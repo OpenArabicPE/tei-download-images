@@ -37,7 +37,7 @@
             <xsl:copy>
                 <xsl:attribute name="url">
                     <xsl:choose>
-                        <!-- check if file name contains a suffic indicating the file type -->
+                        <!-- check if file name contains a suffix indicating the file type -->
                         <xsl:when test="matches($v_file-name,'\.(jpg|jpeg|tiff|tif|png)$')">
                             <xsl:value-of select="$v_file-name"/>
                         </xsl:when>
@@ -127,6 +127,7 @@
             <xsl:element name="change">
                 <xsl:attribute name="when" select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/>
                 <xsl:attribute name="who" select="concat('#',$p_id-editor)"/>
+                <xsl:attribute name="xml:lang" select="'en'"/>
                 <xsl:text>Added links to local facsimile files for each </xsl:text>
                 <tei:gi>surface</tei:gi>
                 <xsl:text> element.</xsl:text>
