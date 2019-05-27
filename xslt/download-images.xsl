@@ -15,11 +15,27 @@
     
     <!-- provide the path to a local folder to which all images should be saved -->
     <xsl:param name="p_base-path" select="'../images/'"/>
+    <xsl:param name="p_image-source" select="'sakhrit'"/>
     <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http. There might be better selectors that should be implemented in future versions -->
     <xsl:param name="p_position-facsimile" select="1"/>
     <!-- @xml:id specifying a responsible editor -->
-    <xsl:param name="p_id-editor" select="'pers_TG'"/>
+    <xsl:include href="../../oxygen-project/OpenArabicPE_parameters.xsl"/>
+<!--    <xsl:param name="p_id-editor" select="'pers_TG'"/>-->
     <xsl:variable name="vg_id-file" select="tei:TEI/@xml:id"/>
+    <xsl:variable name="v_file-name">
+        <xsl:variable name="v_source" select="tei:TEI/tei:teiHeader//tei:sourceDesc/tei:biblStruct[1]"/>
+        <xsl:variable name="v_id-oclc" select="$v_source//tei:idno[@type='OCLC'][1]"/>
+        <xsl:variable name="v_volume" select="$v_source//tei:biblScope[@unit='volume']/@from"/>
+        <xsl:variable name="v_issue">
+            <xsl:choose>
+                <xsl:when test="$v_source//tei:biblScope[@unit='issue']/@from != $v_source//tei:biblScope[@unit='issue']/@to"></xsl:when>
+                <xsl:when test="$v_source//tei:biblScope[@unit='issue']/@from = $v_source//tei:biblScope[@unit='issue']/@to">
+                    <xsl:value-of select="$v_source//tei:biblScope[@unit='issue']/@from"/>
+                </xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:value-of select="concat('oclc_',$v_id-oclc,'-v_',$v_volume,'-i_',$v_issue)"/>
+    </xsl:variable>
     
     <!-- construct urls of online facsimiles -->
     <xsl:variable name="v_image-url">
@@ -30,7 +46,7 @@
     <!-- construct a  list of file names (one for each image) -->
     <xsl:variable name="v_image-local-name">
         <xsl:for-each select="tei:TEI/tei:facsimile/tei:surface/tei:graphic[starts-with(@url,'http')][$p_position-facsimile]">
-            <xsl:variable name="v_file-name">
+            <xsl:variable name="v_file-name-image">
                 <!-- tokenize the path to the online copy and select the last bit that is most likely a file name -->
                 <xsl:value-of select="tokenize(@url,'/')[last()]"/>
             </xsl:variable>
@@ -38,14 +54,14 @@
                 <xsl:attribute name="url">
                     <xsl:choose>
                         <!-- check if file name contains a suffix indicating the file type -->
-                        <xsl:when test="matches($v_file-name,'\.(jpg|jpeg|tiff|tif|png)$')">
-                            <xsl:value-of select="$v_file-name"/>
+                        <xsl:when test="matches($v_file-name-image,'\.(jpg|jpeg|tiff|tif|png)$')">
+                            <xsl:value-of select="concat($p_image-source,'/',$v_file-name,'-img_',$v_file-name-image)"/>
                         </xsl:when>
                         <!-- check for php attributes (used by HathiTrust; e.g. image?id=umn.319510029968624;seq=171) -->
-                        <xsl:when test="matches($v_file-name,'id=.[a-z]+\.\d+;seq=\d+$')">
-                            <xsl:analyze-string select="$v_file-name" regex="id=(.[a-z]+)\.(\d+);seq=(\d+)$">
+                        <xsl:when test="matches($v_file-name-image,'id=.[a-z]+\.\d+;seq=\d+$')">
+                            <xsl:analyze-string select="$v_file-name-image" regex="id=(.[a-z]+)\.(\d+);seq=(\d+)$">
                                 <xsl:matching-substring>
-                                    <xsl:value-of select="concat(regex-group(1),'-',regex-group(2),'-img_',regex-group(3),'.jpg')"/>
+                                    <xsl:value-of select="concat($p_image-source,'/',regex-group(1),'-',regex-group(2),'-img_',regex-group(3),'.jpg')"/>
                                 </xsl:matching-substring>
                             </xsl:analyze-string>
                         </xsl:when>
@@ -111,8 +127,9 @@
             <xsl:apply-templates select="@*| node()"/>
             <!-- add new child -->
             <xsl:element name="tei:graphic">
+                <xsl:attribute name="change" select="concat('#', $p_id-change)"/>
                 <!-- @xml:id should be added by another transformation -->
-                <xsl:attribute name="xml:id" select="concat(@xml:id,'-g_',generate-id())"/>
+                <xsl:attribute name="xml:id" select="concat(@xml:id,'-g_',count(tei:graphic)+1)"/>
                 <!-- add path to local file (to be) downloaded with either the shell or the apple script -->
                 <xsl:attribute name="url" select="concat($p_base-path,$v_image-local-name/descendant-or-self::tei:graphic[$v_position]/@url)"/>
                 <xsl:copy-of select="child::tei:graphic[starts-with(@url,'http')][$p_position-facsimile]/@mimeType"/>
@@ -127,6 +144,7 @@
             <xsl:element name="change">
                 <xsl:attribute name="when" select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/>
                 <xsl:attribute name="who" select="concat('#',$p_id-editor)"/>
+                <xsl:attribute name="xml:id" select="$p_id-change"/>
                 <xsl:attribute name="xml:lang" select="'en'"/>
                 <xsl:text>Added links to local facsimile files for each </xsl:text>
                 <tei:gi>surface</tei:gi>
