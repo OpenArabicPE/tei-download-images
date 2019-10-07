@@ -14,7 +14,8 @@
     <!-- WARNING: make sure that you have the rights to download the images before running this script -->
     
     <!-- provide the path to a local folder to which all images should be saved -->
-    <xsl:param name="p_base-path" select="'../images/'"/>
+    <!-- NOTE: at least in macOS Mojave, applescript seems not to work with relative paths -->
+    <xsl:param name="p_base-path" select="'/BachUni/BachBibliothek/GitHub/OpenArabicPE/journal_lughat-al-arab/images/'"/>
     <xsl:param name="p_image-source" select="'sakhrit'"/>
     <!-- Select an online facsimile based on the position of the tei:graphic children of tei:surface that have an @url beginning with http. There might be better selectors that should be implemented in future versions -->
     <xsl:param name="p_position-facsimile" select="1"/>
